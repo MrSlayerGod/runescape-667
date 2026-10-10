@@ -534,7 +534,9 @@ it spawns them over, and each effector its `type` and the vertex it stands `at`.
 client's vertices, in its units and frame before the file's turn, so an engine places them as it
 places the model's vertices, through the same merge, mirror, scale and turn. The types are in the
 texture library, under `particle/`. Each billboard, a sprite the client draws on a face, is resolved
-from its type: the `centre` of its face in the same frame, the `distance` it is pulled towards the
+from its type: the three `corners` of its face in the same frame and the `labels` their vertices
+carry, -1 for none, as the client draws a billboard at the middle of the corners after a sequence's
+frame has moved them, the `distance` it is pulled towards the
 camera in the client's units, its `halfWidth` and `halfHeight` in those units, its `texture`, its
 `blendMode` (1 by alpha, 2 added, 128 multiplied in), the face's `colour` from the palette, its
 `alpha` out of 255, and its `group`, the label by which the frames of a sequence scale, turn and move

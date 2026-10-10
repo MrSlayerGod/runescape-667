@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Where a model draws its billboards, for a shape's {@code extras}: for each, the point it is
- * drawn at, which is the middle of its face in the client's units and frame before the file's
- * turn, how far it is pulled towards the camera, its half width and half height in the client's
+ * Where a model draws its billboards, for a shape's {@code extras}: for each, the three
+ * {@code corners} of its face in the client's units and frame before the file's turn, and the
+ * {@code labels} the corners' vertices carry, -1 for none, as the GL toolkit draws a billboard at
+ * the middle of its face's corners after a sequence's frame has moved them; how far it is pulled
+ * towards the camera, its half width and half height in the client's
  * units, its texture, how it blends (1 by its alpha, 2 added, 128 multiplied in), the face's
  * colour as the palette gives it, its alpha out of 255, and its group, by which the frames of a
  * sequence scale, turn and move it (transforms 10, 9 and 8, {@code Mesh.getBillboardGroups}), -1
@@ -21,6 +23,8 @@ public final class BillboardSources {
 
     private static final int NO_GROUP = -1;
 
+    private static final int NO_LABEL = -1;
+
     public static List<Map<String, Object>> billboards(JavaModel model) {
         var written = new ArrayList<Map<String, Object>>();
         for (var index = 0; index < model.billboardFaces.length; index++) {
@@ -30,10 +34,8 @@ public final class BillboardSources {
             var b = model.faceB[face];
             var c = model.faceC[face];
             var entry = new LinkedHashMap<String, Object>();
-            entry.put("centre", List.of(
-                middle(model.vertexX[a], model.vertexX[b], model.vertexX[c]),
-                middle(model.vertexY[a], model.vertexY[b], model.vertexY[c]),
-                middle(model.vertexZ[a], model.vertexZ[b], model.vertexZ[c])));
+            entry.put("corners", List.of(corner(model, a), corner(model, b), corner(model, c)));
+            entry.put("labels", List.of(vertexLabel(model, a), vertexLabel(model, b), vertexLabel(model, c)));
             entry.put("distance", billboard.distance);
             entry.put("halfWidth", (int) billboard.width);
             entry.put("halfHeight", (int) billboard.height);
@@ -65,9 +67,26 @@ public final class BillboardSources {
         return NO_GROUP;
     }
 
-    /** The middle of three corners, as the GL toolkit averages them in floats. */
-    private static float middle(int a, int b, int c) {
-        return (a + b + c) * 0.3333333F;
+    private static List<Integer> corner(JavaModel model, int vertex) {
+        return List.of(model.vertexX[vertex], model.vertexY[vertex], model.vertexZ[vertex]);
+    }
+
+    /**
+     * The label a vertex carries, from the vertices of each label the model keeps where it was
+     * built with its labels, or none.
+     */
+    private static int vertexLabel(JavaModel model, int vertex) {
+        if (model.vertexLabels == null) {
+            return NO_LABEL;
+        }
+        for (var label = 0; label < model.vertexLabels.length; label++) {
+            for (var member : model.vertexLabels[label]) {
+                if (member == vertex) {
+                    return label;
+                }
+            }
+        }
+        return NO_LABEL;
     }
 
     private BillboardSources() {

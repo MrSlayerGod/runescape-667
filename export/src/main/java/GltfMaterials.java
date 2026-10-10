@@ -104,6 +104,11 @@ public final class GltfMaterials {
             extras.put("effectType", (int) metrics.effectType);
             extras.put("effectParam1", metrics.effectParam1 & 0xFF);
             extras.put("effectParam2", metrics.effectParam2);
+            if (metrics.speedU != 0 || metrics.speedV != 0) {
+                extras.put("speedU", (int) metrics.speedU);
+                extras.put("speedV", (int) metrics.speedV);
+                extras.put("small", metrics.small);
+            }
         }
         if (!extras.isEmpty()) {
             material.put("extras", extras);

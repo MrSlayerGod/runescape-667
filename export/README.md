@@ -161,7 +161,9 @@ texture. A model's textured primitive carries the face colour as `COLOR_1`, next
 water and others the client marks stay on, and a textured material says which in its `extras`,
 as `disableable`. The same `extras` give the texture's `colourOp`, which is how the GL client
 combines a texel with the lit vertex colour: 0 multiplies them, 1 shows the texel alone, 2
-interpolates, 3 adds them and 4 takes a dot product.
+interpolates, 3 adds them and 4 takes a dot product. A texture that moves also gives its
+`speedU` and `speedV` and whether it is `small` (64 texels across, else 128), from which the GL
+client moves it by the time (`GlToolkit.method7015`); a texture that does not move gives none.
 
 
 ## The model library

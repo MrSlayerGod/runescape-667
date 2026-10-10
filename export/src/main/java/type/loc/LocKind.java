@@ -60,11 +60,6 @@ public final class LocKind implements ConfigKind<LocType> {
      */
     private static final int FULL_SCALE = 128;
 
-    /**
-     * The weight the client gives the one sequence of a type that names only one.
-     */
-    private static final int SOLE_WEIGHT = 65535;
-
     private static final Codes CODES = Codes.of()
         .code(1, "modelShapes", "models")
         .code(2, "name")
@@ -288,20 +283,6 @@ public final class LocKind implements ConfigKind<LocType> {
         extras.put("active", type.active);
         extras.put("ops", Lists.options(type.ops, OPTION_SLOTS));
         extras.put("membersOps", captured.getOrDefault("membersOps", noMembersOps()));
-        if (type.hasAnimations()) {
-            var sequences = new ArrayList<Integer>();
-            var weights = new ArrayList<Integer>();
-            for (var i = 0; i < type.anim.length; i++) {
-                if (type.anim[i] != -1) {
-                    sequences.add(type.anim[i]);
-                    weights.add(type.anim.length > 1 ? type.anim_weight[i] : SOLE_WEIGHT);
-                }
-            }
-            extras.put("sequences", sequences);
-            if (sequences.size() > 1) {
-                extras.put("sequenceWeights", weights);
-            }
-        }
         extras.put("randomStartFrame", type.randomanimframe);
         extras.put("anim", Values.of(type.anim));
         extras.put("animWeights", captured.get("animWeights"));

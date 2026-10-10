@@ -88,8 +88,11 @@ export interface LocExtras {
     readonly translate: readonly [number, number, number];
     readonly hillchange: number;
     readonly hillskew: number;
-    readonly sequences?: readonly number[];
-    readonly sequenceWeights?: readonly number[];
+    /**
+     * The sequences the type plays, a slot of none as -1, and their raw weights where it names several.
+     */
+    readonly anim?: readonly number[] | null;
+    readonly animWeights?: readonly number[] | null;
     readonly randomStartFrame?: boolean;
 }
 

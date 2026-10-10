@@ -27,7 +27,7 @@ const WALL_DECORATION_TURNED_MOVE_FINE: readonly [number, number, number] = [180
 
 /** Whether a placement uses the asset that is turned 45 degrees already. */
 export function usesTurnedMesh(extras: LocExtras, placement: Placement): boolean {
-    return placement.rotation > 3 && placement.shape === WALL_DECORATION && extras.sequences !== undefined;
+    return placement.rotation > 3 && placement.shape === WALL_DECORATION && (extras.anim ?? []).some(sequence => sequence >= 0);
 }
 
 /**

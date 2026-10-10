@@ -6,6 +6,7 @@ import com.jagex.game.runetek6.config.lighttype.LightTypeList;
 import com.jagex.game.runetek6.config.loctype.LocType;
 import com.jagex.game.runetek6.config.loctype.LocTypeList;
 import com.jagex.game.runetek6.config.vartype.TimedVarDomain;
+import com.jagex.graphics.EnvironmentLight;
 import com.jagex.graphics.Ground;
 import com.jagex.graphics.ModelAndShadow;
 import com.jagex.js5.Js5Archive;
@@ -215,14 +216,26 @@ public final class ClientMapSquareReader {
      *     the look of another can be the one it was placed as.
      * @param check whether its asset, placed as {@link LocPlacing} describes, is what the client
      *     builds for it.
+     * @param water for a location on the bed under the water, the water over it as the client gives
+     *     it while it draws the location, or null for one on land.
      */
     public record Placement(int id, String name, int shape, int rotation, int level, int virtualLevel, String part,
-                            boolean underwater, int x, int y, int z, int sequencesOf, Check check) {
+                            boolean underwater, int x, int y, int z, int sequencesOf, Check check, Water water) {
 
-        private Placement under(boolean water) {
-            return new Placement(id, name, shape, rotation, level, virtualLevel, part, water, x, y, z, sequencesOf,
-                check);
+        private Placement under(boolean underwater, Water water) {
+            return new Placement(id, name, shape, rotation, level, virtualLevel, part, underwater, x, y, z,
+                sequencesOf, check, water);
         }
+    }
+
+    /**
+     * The water over a location on the bed, which the client gives the toolkit before it draws the
+     * location in the world under the water ({@code Static658.method8591}, {@code GlToolkit.EA}): the
+     * height of the water's surface at the location, the average of the land's level 0 there, and the
+     * colour, the depth and the bias of the water of its tile, by which the underwater program fades
+     * each vertex towards the colour with its depth under the surface ({@code UnderwaterEffect}).
+     */
+    public record Water(int surfaceY, int colour, int depth, int bias) {
     }
 
     /**
@@ -560,13 +573,26 @@ public final class ClientMapSquareReader {
                 for (var z = ORIGIN_TILES; z < ORIGIN_TILES + TILES_ACROSS; z++) {
                     var tile = tiles[level][x][z];
                     if (tile != null) {
-                        placementsOn(tile, toolkit, seen).forEach(placement -> placements.add(placement.under(underwater)));
+                        placementsOn(tile, toolkit, seen).forEach(placement -> placements.add(placement.under(underwater,
+                            underwater ? waterOver(placement) : null)));
                     }
                 }
             }
         }
 
         return List.copyOf(placements);
+    }
+
+    /**
+     * The water over a location on the bed, as the client reads it for the location's tile. A
+     * location of several tiles takes the tile of its middle here, where the client takes its first.
+     */
+    private static Water waterOver(Placement placement) {
+        var tileX = placement.x() >> EnvironmentLight.tileShift;
+        var tileZ = placement.z() >> EnvironmentLight.tileShift;
+        return new Water(Static706.floor[0].averageHeight(placement.x(), placement.z()),
+            Static100.getWaterColour(tileX, tileZ), Static350.getWaterDepth(tileX, tileZ),
+            Static339.getWaterBias(tileX, tileZ));
     }
 
     private List<Placement> placementsOn(Tile tile, JavaToolkit toolkit, Set<Object> seen) {
@@ -692,7 +718,7 @@ public final class ClientMapSquareReader {
             return Optional.empty();
         } else {
             return Optional.of(new Placement(id, type.name, builtShape, builtRotation, level, virtualLevel, part,
-                underwater, x, y, z, sequencesOf, check));
+                underwater, x, y, z, sequencesOf, check, null));
         }
     }
 

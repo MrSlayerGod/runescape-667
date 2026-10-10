@@ -359,6 +359,14 @@ public final class MapSquareExport {
         if (placement.sequencesOf() != placement.id()) {
             description.put("sequencesOf", placement.sequencesOf());
         }
+        if (placement.water() != null) {
+            var water = new LinkedHashMap<String, Object>();
+            water.put("surfaceY", placement.water().surfaceY());
+            water.put("colour", placement.water().colour());
+            water.put("depth", placement.water().depth());
+            water.put("bias", placement.water().bias());
+            description.put("water", water);
+        }
         return description;
     }
 

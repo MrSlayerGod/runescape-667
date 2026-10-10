@@ -629,7 +629,13 @@ it stands as `x`, `y` and `z` from the map square's south west corner, and what 
 it as, its `part`. A location that takes
 the look of another by a variable is named as the look it has taken, with every variable at 0,
 which is how the client stands before the server sends any, and `sequencesOf` names the location
-whose sequences it plays where that is not the same one.
+whose sequences it plays where that is not the same one. A placement on the bed under the water has
+its `water`, which the client gives the toolkit before it draws the location there on high water
+detail (`Static658.method8591`, `GlToolkit.EA`): `surfaceY`, the height of the water's surface at
+the location (level 0's average height there), and the `colour`, `depth` and `bias` of the water of
+its tile, by which `UnderwaterEffect` fades each vertex towards the colour with its depth under the
+surface. A location of several tiles takes the tile of its middle, where the client takes its
+first.
 
 The description holds `flags`: the client's flags for every tile of each level, as
 `[level][x][z]` over the map square, which decide what the client shows from where the player

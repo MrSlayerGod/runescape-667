@@ -10,10 +10,9 @@ import java.util.Map;
  * {@code a}, {@code b} and {@code c} of its face in the client's units and frame before the file's
  * turn, as an emitter's are, and the {@code labels} the corners' vertices carry, -1 for none, as
  * the GL toolkit draws a billboard at the middle of its face's corners after a sequence's frame has
- * moved them; how far it is pulled
- * towards the camera, its half width and half height in the client's
- * units, its texture, how it blends (1 by its alpha, 2 added, 128 multiplied in), the face's
- * colour as the palette gives it, its alpha out of 255, and its group, by which the frames of a
+ * moved them; how far it is pulled towards the camera, its half width and half height in the
+ * client's units, its texture, how it blends (1 by its alpha, 2 added, 128 multiplied in), the
+ * face's colour as the palette gives it, its alpha out of 255, and its group, by which the frames of a
  * sequence scale, turn and move it (transforms 10, 9 and 8, {@code Mesh.getBillboardGroups}), -1
  * for none. These are what the GL toolkit draws with ({@code GlModel.renderBillboards}); the face
  * itself is left out of the mesh where the type hides it.

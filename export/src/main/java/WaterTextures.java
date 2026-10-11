@@ -5,10 +5,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * Writes what the GL toolkit's fixed function water effect draws with, beside the textures: the
- * sixteen frames of rippling noise it lays over the water, the client's own
- * {@code GlRippleNoiseTexture}, 128 by 128 texels of luminance and alpha, written as one strip
- * of sixteen frames down a PNG with the luminance in each colour channel.
+ * Writes what the GL toolkit's water effects draw with, beside the textures: the sixteen frames of
+ * rippling noise the fixed function and turbulent water effects lay over the water, the client's
+ * own {@code GlRippleNoiseTexture}, and the sixteen frames of flowing noise the flowing water
+ * effect lays over a waterfall, its {@code GlFlowNoiseTexture}. Each is 128 by 128 texels of
+ * luminance and alpha, written as one strip of sixteen frames down a PNG with the luminance in
+ * each colour channel.
  */
 public final class WaterTextures {
 
@@ -20,12 +22,12 @@ public final class WaterTextures {
     public static void write(Path directory) throws IOException {
         var water = directory.resolve("water");
         Files.createDirectories(water);
-        ImageIO.write(rippleStrip(), "png", water.resolve("ripple.png").toFile());
+        ImageIO.write(strip(new GlRippleNoiseTexture().generate()), "png", water.resolve("ripple.png").toFile());
+        ImageIO.write(strip(new GlFlowNoiseTexture().generate()), "png", water.resolve("flow.png").toFile());
         Files.deleteIfExists(water.resolve("turbulence.json"));
     }
 
-    private static BufferedImage rippleStrip() {
-        var texels = new GlRippleNoiseTexture().generate();
+    private static BufferedImage strip(byte[] texels) {
         var image = new BufferedImage(WIDTH_TEXELS, HEIGHT_TEXELS * FRAMES, BufferedImage.TYPE_INT_ARGB);
         for (var frame = 0; frame < FRAMES; frame++) {
             for (var y = 0; y < HEIGHT_TEXELS; y++) {
